@@ -124,15 +124,25 @@ int main(){
 
 	// 4. set up vertex data, x,y,z
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f, // left
-		0.5f, -0.5f, 0.0f, // right
-		0.0f, 0.5f, 0.0f // top
+		0.5f, 0.5f, 0.0f, // top right
+		0.5f, -0.5f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f, // bottom left
+		-0.5f, 0.5f, 0.0f // top left
+
 	};
 
+	unsigned int indices[] = {
+		0, 1, 3, // first triangle
+		1, 2, 3 // second triangle
+	};
+
+	
 	// buffer and vertex array
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
 	// bind array
 	glBindVertexArray(VAO);
 
@@ -143,6 +153,11 @@ int main(){
 	// many times and the contents are modified by the app and used as the
 	// source for GL drawing
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+
 
 	// set the vertex attribute pointers
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
@@ -163,10 +178,12 @@ int main(){
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 	
-		// triangle rendering
+		// rec rendering
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// drawing 2 triangles
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 
 
 		glfwSwapBuffers(window);
